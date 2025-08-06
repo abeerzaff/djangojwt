@@ -65,7 +65,9 @@ class LoginView(APIView):
                 httponly=True,
                 secure=True,  # Set False in dev if needed
                 samesite='Lax',
-                max_age=1800  
+                max_age=1800
+                
+
             )
 
             # Set long-lived refresh token
