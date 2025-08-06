@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny 
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from django.contrib.auth import get_user_model
-from rest_framework.decorators import api_view, permission_classes
+#from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status 
@@ -36,7 +36,13 @@ class LoginView(APIView):
 
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-        #User = get_user_model()
+        User = get_user_model()
+
+        try:
+            user_exists = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'detail': 'Invalid email'}, status=401)
+        
 
         
         user = authenticate(request, username=email, password=password)
@@ -59,7 +65,7 @@ class LoginView(APIView):
                 httponly=True,
                 secure=True,  # Set False in dev if needed
                 samesite='Lax',
-                max_age=900  # 5 minutes
+                max_age=30 * 24 * 60 * 60   
             )
 
             # Set long-lived refresh token
@@ -74,9 +80,9 @@ class LoginView(APIView):
 
             return response
 
-        return Response({'detail': 'Invalid credentials'}, status=401)
-
-
+        else:
+            # Step 4: Email exists but password is wrong
+            return Response({'detail': 'Invalid password'}, status=401)
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
