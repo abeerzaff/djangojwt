@@ -65,7 +65,7 @@ class LoginView(APIView):
                 httponly=True,
                 secure=True,  # Set False in dev if needed
                 samesite='Lax',
-                max_age=30 * 24 * 60 * 60   
+                max_age=1800  
             )
 
             # Set long-lived refresh token
@@ -81,7 +81,7 @@ class LoginView(APIView):
             return response
 
         else:
-            # Step 4: Email exists but password is wrong
+            
             return Response({'detail': 'Invalid password'}, status=401)
 
 class ProfileView(APIView):
